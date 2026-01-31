@@ -1,0 +1,1 @@
+const list=document.getElementById('doc-list');async function refresh(){try{const docs=await api.get('/docs/');list.innerHTML='';docs.forEach(d=>{const el=document.createElement('div');el.className='item';el.innerHTML=`<strong>${d.title}</strong> <small>${d.tags||''}</small>`;list.appendChild(el)})}catch(err){list.textContent=err.message+' (Did you login?)'}}refresh();
