@@ -1,0 +1,35 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: pral_km_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pral
+      POSTGRES_PASSWORD: pralpwd
+      POSTGRES_DB: pralkm
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./backend/db-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  api:
+    build: .
+    container_name: pral_km_api
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      ENV: prod
+      APP_NAME: PRAL Legal KM
+      SECRET_KEY: change-me-in-prod
+      ACCESS_TOKEN_EXPIRE_MINUTES: 240
+      DATABASE_URL: postgresql+psycopg2://pral:pralpwd@db:5432/pralkm
+      BACKEND_CORS_ORIGINS: ["http://localhost:8080","http://127.0.0.1:8080"]
+    volumes:
+      - ./storage:/app/storage
+    ports:
+      - "8000:8000"
+
+volumes:
+  dbdata:
